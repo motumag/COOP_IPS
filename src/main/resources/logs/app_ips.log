@@ -1,0 +1,22 @@
+2024-12-05 08:07:34,262 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping [main] 9 mappings in 'requestMappingHandlerMapping'
+2024-12-05 08:07:34,349 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping [main] Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2024-12-05 08:07:34,387 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter [main] ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2024-12-05 08:07:34,422 DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver [main] ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2024-12-05 08:12:23,520 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping [main] 9 mappings in 'requestMappingHandlerMapping'
+2024-12-05 08:12:23,624 DEBUG o.s.w.s.h.SimpleUrlHandlerMapping [main] Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2024-12-05 08:12:23,665 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter [main] ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2024-12-05 08:12:23,708 DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver [main] ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2024-12-05 08:12:30,888 INFO o.s.w.s.DispatcherServlet [http-nio-9181-exec-2] Initializing Servlet 'dispatcherServlet'
+2024-12-05 08:12:30,888 DEBUG o.s.w.s.DispatcherServlet [http-nio-9181-exec-2] Detected StandardServletMultipartResolver
+2024-12-05 08:12:30,888 DEBUG o.s.w.s.DispatcherServlet [http-nio-9181-exec-2] Detected AcceptHeaderLocaleResolver
+2024-12-05 08:12:30,888 DEBUG o.s.w.s.DispatcherServlet [http-nio-9181-exec-2] Detected FixedThemeResolver
+2024-12-05 08:12:30,889 DEBUG o.s.w.s.DispatcherServlet [http-nio-9181-exec-2] Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@6ba0ee4a
+2024-12-05 08:12:30,890 DEBUG o.s.w.s.DispatcherServlet [http-nio-9181-exec-2] Detected org.springframework.web.servlet.support.SessionFlashMapManager@ec5f944
+2024-12-05 08:12:30,890 DEBUG o.s.w.s.DispatcherServlet [http-nio-9181-exec-2] enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2024-12-05 08:12:30,890 INFO o.s.w.s.DispatcherServlet [http-nio-9181-exec-2] Completed initialization in 2 ms
+2024-12-05 08:12:30,898 DEBUG o.s.w.s.DispatcherServlet [http-nio-9181-exec-2] POST "/api/jwt", parameters={}
+2024-12-05 08:12:30,909 DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping [http-nio-9181-exec-2] Mapped to com.cbo.coopipsapp.controller.JWTController#getJwt(String)
+2024-12-05 08:12:30,928 DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor [http-nio-9181-exec-2] Read "text/plain;charset=UTF-8" to ["cbo"]
+2024-12-05 08:12:30,962 DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor [http-nio-9181-exec-2] Using 'text/plain', given [*/*] and supported [text/plain, */*, application/json, application/*+json]
+2024-12-05 08:12:30,962 DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor [http-nio-9181-exec-2] Writing ["eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJDQk9SRVRBQSIsImNlcnRfaXNzIjoiQ049VEVTVCBFVFMgSVBTIEl (truncated)..."]
+2024-12-05 08:12:30,968 DEBUG o.s.w.s.DispatcherServlet [http-nio-9181-exec-2] Completed 200 OK
