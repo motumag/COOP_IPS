@@ -30,6 +30,7 @@ public class DigestController {
         xmlResponse = xmlResponse.replace("&#xD;", "");
         return xmlResponse;
     }
+//    TODO: add cbs payment
 
     @PostMapping(value = "/evictCache")
     public String evictCach() {
