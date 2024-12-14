@@ -58,7 +58,8 @@ public class CerteficatClientService {
         /**
          * @// TODO: 8/14/2024  add certifciate cache mechanism using redis and uncommetn the line
          */
-        CerteficateInformation cachedCeretficate = null;//this.getFromCache(certeficateInformation.getCertificateSerialNumber());
+        CerteficateInformation cachedCeretficate = null;
+//        this.getFromCache(certeficateInformation.getCertificateSerialNumber());
         if (cachedCeretficate == null || !StringUtils.hasText(cachedCeretficate.getCertificate())) {
             create();
 //         ContentType

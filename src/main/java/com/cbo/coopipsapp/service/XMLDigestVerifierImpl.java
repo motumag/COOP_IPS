@@ -22,10 +22,7 @@ public class XMLDigestVerifierImpl implements XMLDigestVerifier {
     private XmlSignUtil signUtil;
     @Override
     public String verify(String signedXml) {
-
-
         Document document = xmlFileUtility.createDocumentFromString(signedXml);
-
       boolean validDocuemnt=false;
 
         try {
