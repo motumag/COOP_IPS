@@ -15,10 +15,10 @@ public class SimpleValueGenerator {
         // Submit the task to the executor
         executorService.submit(() -> {
             // Generate random numeric ID for EndToEndId (8 digits)
-            String endToEndId = "CBETETAA" + String.format("%08d", new Random().nextInt(1_000_000_00));
+            String endToEndId = "CBORETAAXXX" + String.format("%08d", new Random().nextInt(1_000_000_00));
 
             // Generate random numeric ID for TxId (14 digits)
-            String txId = "CBETETAA" + String.format("%014d", new Random().nextLong() % 1_000_000_000_000_00L);
+            String txId = "CBORETAAXXX" + String.format("%014d", new Random().nextLong() % 1_000_000_000_000_00L);
           // Generate AccptncDtTm (Acceptance Date Time) in ISODateTime format with specific timezone (+06:00)
             String accptncDtTm = ZonedDateTime.now(ZoneOffset.ofHours(6)).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"));
 

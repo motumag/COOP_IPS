@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -29,9 +30,6 @@ public class CerteficatClientService {
     @Value("${ets.ips.certificate.download.url}")
     private String certeficateDownloadUrl;
 
-
-
-
     @Autowired
     public CerteficatClientService(CacheRepository cacheRepository,
                                    CertificateCacheRepository certificateCacheRepository) {
@@ -40,7 +38,6 @@ public class CerteficatClientService {
 
 
     }
-
 
     public void create() {
         restTemplate = new RestTemplate();
@@ -56,7 +53,7 @@ public class CerteficatClientService {
 
     public CerteficateInformation downloadCerteficate(String serialNumber, CerteficateInformation certeficateInformation, String validToken) {
         /**
-         * @// TODO: 8/14/2024  add certifciate cache mechanism using redis and uncommetn the line
+         * @// TODO: 8/14/2024  add certifciate cache mechanism using redis and uncomment the line
          */
         CerteficateInformation cachedCeretficate = null;
 //        this.getFromCache(certeficateInformation.getCertificateSerialNumber());
@@ -74,7 +71,7 @@ public class CerteficatClientService {
                             + certeficateInformation.getCertificateSerialNumber(), HttpMethod.GET, httpEntity, CerteficateInformation.class);
             certeficateInformation.setCertificate(responseEntity.getBody().getCertificate());
             /**
-             * @// TODO: 8/14/2024  add certifciate cache mechanism using redis
+             * @// TODO: 8/14/2024  add certificate cache mechanism using redis
              */
 //            cacheRepository.put(certeficateInformation.getCertificateSerialNumber(), certeficateInformation.getCertificate());
             System.out.println(responseEntity);
@@ -85,6 +82,27 @@ public class CerteficatClientService {
 
     }
 
+//    @Cacheable(value = "certificates", key = "#serialNumber", unless = "#result == null || !#result.hasCertificate()")
+//    public CerteficateInformation downloadCerteficate(String serialNumber, CerteficateInformation certificateInformation, String validToken) {
+//        System.out.println("Cache miss: Fetching certificate from the API");
+//
+//        headers.add("Content-Type", "application/x-www-form-urlencoded");
+//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//        headers.setBearerAuth(validToken);
+//
+//        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(headers);
+//
+//        ResponseEntity<CerteficateInformation> responseEntity = restTemplate.exchange(
+//                certeficateDownloadUrl + "?cert_iss=" + certificateInformation.getCertificateIssuer()
+//                        + "&&cert_sn=" + serialNumber,
+//                HttpMethod.GET, httpEntity, CerteficateInformation.class);
+//
+//        if (responseEntity.getBody() != null) {
+//            certificateInformation.setCertificate(responseEntity.getBody().getCertificate());
+//        }
+//
+//        return certificateInformation;
+//    }
     private CerteficateInformation getFromCache(String serialNumber) {
         Optional<String> s = cacheRepository.get(serialNumber);
         CerteficateInformation certeficateInformation = null;
@@ -92,10 +110,7 @@ public class CerteficatClientService {
             log.debug("Found the key in cache {} ", s.get());
             certeficateInformation = new CerteficateInformation();
             certeficateInformation.setCertificate(s.get());
-
         }
         return certeficateInformation;
     }
-
-
 }

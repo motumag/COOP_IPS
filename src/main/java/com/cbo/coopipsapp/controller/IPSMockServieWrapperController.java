@@ -1,6 +1,4 @@
 package com.cbo.coopipsapp.controller;
-
-
 import com.cbo.coopipsapp.service.DigestService;
 import com.cbo.coopipsapp.service.MockApplicationServerAccessService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +30,6 @@ public class IPSMockServieWrapperController {
         } else {
             System.out.println(" the api key is Wrong");
         }
-
         return wrappedMessage;
     }
 

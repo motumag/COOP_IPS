@@ -22,11 +22,13 @@ public class CertificateCacheRepository implements CacheRepository {
 
     @Autowired
     public CertificateCacheRepository(StringRedisTemplate redisTemplate,
-                                      @Value("${spring.redis.timeToLive}") long ttl) {
+                                      @Value("${spring.cache.redis.time-to-live}") long ttl) {
         this.redisTemplate = redisTemplate;
         valueOps = redisTemplate.opsForValue();
         this.ttl = ttl;
     }
+//("${spring.redis.timeToLive}
+//    spring.cache.redis.time-to-live
 
     /**
      * Save the key value pair in cache with a ttl
