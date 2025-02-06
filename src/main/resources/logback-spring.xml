@@ -4,7 +4,8 @@
     <!--        <property name="HOME_LOG" value="${app.log.file.location}"/>-->
     <springProfile name="dev">
 <!--        <property name="HOME_LOG" value="src/main/resources/logs/app_ips.log"/>-->
-        <property name="HOME_LOG" value="C:/Users/Appconpc/Desktop/IPS/ipscerts/app_ips.log"/>
+<!--        <property name="HOME_LOG" value="C:/Users/Appconpc/Desktop/IPS/ipscerts/app_ips.log"/>-->
+        <property name="HOME_LOG" value="/Users/motumagishu/Desktop/CBS-CBO/IPS/ips_logs/app_ips.log"/>
     </springProfile>
     <springProfile name="test">
         <property name="HOME_LOG" value="src/main/resources/logs/app.log"/>

@@ -33,12 +33,16 @@ import javax.xml.xpath.XPathFactory;
 import java.math.BigInteger;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import static com.cbo.coopipsapp.context.Constants.*;
+import static com.cbo.coopipsapp.utils.Constants.SECUREMENT_ACTION_SEPARATOR;
 
 @Service
 @Setter
@@ -62,6 +66,7 @@ public class XmlSignUtil {
         for (String securementAction : securementActionSet) {
             securementActionBuffer.append(String.format("//*[local-name()='%s']", securementAction));
             securementActionBuffer.append(String.format("%s", SECUREMENT_ACTION_SEPARATOR));
+//            securementActionBuffer.append(String.format("%s", SECUREMENT_ACTION_SEPARATOR));
         }
         String returnValue = securementActionBuffer.toString();
         EXPRESSION = returnValue.substring(0, returnValue.length() - SECUREMENT_ACTION_SEPARATOR.length());
@@ -80,7 +85,6 @@ public class XmlSignUtil {
     public Document sign(Document document, SignatureInfo signatureInfo, SignatureKeyInfo signatureKeyInfo) throws XMLSecurityException, XPathExpressionException {
         final NodeList bahNodes = document.getElementsByTagNameNS(BAH_NAME.getNamespaceURI(), BAH_NAME.getLocalPart());
         if (bahNodes.getLength() == 0) {
-            //LOG("No BAH element is provided in request");
             throw new SecurityException("No BAH element is provided in request");
         }
         Element bahElement = (Element) bahNodes.item(0);
@@ -149,7 +153,88 @@ public class XmlSignUtil {
         xmlSignature.sign(signatureKeyInfo.getPrivateKey());
         return document;
     }
+//Make the signature with the dynamic time
+public static String generateSigningTime() {
+    return ZonedDateTime.now(ZoneOffset.UTC)
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+}
 
+//    Signature for the incoming
+public Document signIncoming(Document document, SignatureInfo signatureInfo, SignatureKeyInfo signatureKeyInfo) throws XMLSecurityException, XPathExpressionException {
+    final NodeList bahNodes = document.getElementsByTagNameNS(BAH_NAME.getNamespaceURI(), BAH_NAME.getLocalPart());
+    if (bahNodes.getLength() == 0) {
+        throw new SecurityException("No BAH element is provided in request");
+    }
+    Element bahElement = (Element) bahNodes.item(0);
+
+    Element sgntrElement = document.createElementNS(WS_SECURITY_NAME.getNamespaceURI(), WS_SECURITY_NAME.getLocalPart());
+
+    Element dsObject = document.createElementNS(DS_NS, "ds:Object");
+    Element QualifyingProperties = document.createElementNS(XADES_QUALIFYING_PROPERTIES_NAME.getNamespaceURI(), XADES_QUALIFYING_PROPERTIES_NAME.getPrefix() + ":" + XADES_QUALIFYING_PROPERTIES_NAME.getLocalPart());
+    Element SignedProperties = document.createElementNS(XADES_SIGNED_PROPERTIES_NAME.getNamespaceURI(), XADES_QUALIFYING_PROPERTIES_NAME.getPrefix() + ":" + XADES_SIGNED_PROPERTIES_NAME.getLocalPart());
+    Element SignedSignatureProperties = document.createElementNS(XADES_SIGNED_SIG_PROPERTIES_NAME.getNamespaceURI(), XADES_QUALIFYING_PROPERTIES_NAME.getPrefix() + ":" + XADES_SIGNED_SIG_PROPERTIES_NAME.getLocalPart());
+    Element SigningTime = document.createElementNS(XADES_SIGNED_SIGN_TIME_NAME.getNamespaceURI(), XADES_QUALIFYING_PROPERTIES_NAME.getPrefix() + ":" + XADES_SIGNED_SIGN_TIME_NAME.getLocalPart());
+
+//    SigningTime.setTextContent("2023-11-06T11:12:25Z");
+    SigningTime.setTextContent(generateSigningTime());
+    dsObject.appendChild(QualifyingProperties);
+    QualifyingProperties.appendChild(SignedProperties);
+    SignedProperties.appendChild(SignedSignatureProperties);
+    SignedSignatureProperties.appendChild(SigningTime);
+//    sgntrElement.setPrefix("document");
+    bahElement.appendChild(sgntrElement);
+
+    final XMLSignature xmlSignature = new XMLSignature(document,
+            BAH_NAME.getNamespaceURI(),
+            signatureInfo.getSignatureMethodAlgorithm(),
+            signatureInfo.getSignatureCanonicalizationMethodAlgorithm());
+    xmlSignature.getElement().appendChild(dsObject);
+    sgntrElement.appendChild(xmlSignature.getElement());
+
+    xmlSignature.addResourceResolver(new XmlSignBAHResolver());
+    xmlSignature.addResourceResolver(new XmlSignDocumentResolver(document));
+
+    KeyInfo ki = xmlSignature.getKeyInfo();
+
+    ki.add(new X509Data(document));
+    X509Certificate key = keyUtils.getStoredCerteficate();
+    BigInteger serialNumber = key.getSerialNumber();
+    String issuer = key.getIssuerX500Principal().getName();
+    ki.itemX509Data(0).addIssuerSerial(issuer, serialNumber);
+
+
+    XPathFactory xpf = new net.sf.saxon.xpath.XPathFactoryImpl();
+    XPath xpath = xpf.newXPath();
+    xpath.setNamespaceContext(new DSNamespaceContext());
+    NodeList elementsToSign = (NodeList) xpath.evaluate(EXPRESSION, document, XPathConstants.NODESET);
+    for (int i = 0; i < elementsToSign.getLength(); i++) {
+        Element elementToSign = (Element) elementsToSign.item(i);
+        String elementName = elementToSign.getLocalName();
+
+
+        String id = UUID.randomUUID().toString();
+//        String id = generateId+"-signedprops";
+//        SECUREMENT_SINATURE_INFO_EXCLUSION
+        Transforms transforms = getSecurementTransformer(document);
+        if (SECUREMENT_SINATURE_INFO_EXCLUSION.equals(elementName)) {
+            transforms.addTransform(signatureInfo.getSignatureExclusionTransformer());
+            elementToSign.setAttributeNS(null, "Id", id+"-signedprops");
+            elementToSign.setIdAttributeNS(null, "Id", true);
+            xmlSignature.addDocument("#" + id+"-signedprops", transforms, signatureInfo.getAppHdrReferenceSignInfo().getDigestMethodAlgorithm(), null, "http://uri.etsi.org/01903/v1.3.2#SignedProperties");
+        } else if (SECUREMENT_ACTION_EXCLUSION.equals(elementName)) {
+            transforms.addTransform(signatureInfo.getDocumentReferenceSignInfo().getTransformAlgorithm());
+            xmlSignature.addDocument(null, transforms, signatureInfo.getDocumentReferenceSignInfo().getDigestMethodAlgorithm());
+        } else {
+            transforms.addTransform(signatureInfo.getKeyReferenceSignInfo().getTransformAlgorithm());
+            elementToSign.setAttributeNS(null, "Id", id);
+            elementToSign.setIdAttributeNS(null, "Id", true);
+
+            xmlSignature.addDocument("#" + id, transforms, signatureInfo.getKeyReferenceSignInfo().getDigestMethodAlgorithm());
+        }
+    }
+    xmlSignature.sign(signatureKeyInfo.getPrivateKey());
+    return document;
+}
 
     /**
      * Verify the signed document with supplied public key

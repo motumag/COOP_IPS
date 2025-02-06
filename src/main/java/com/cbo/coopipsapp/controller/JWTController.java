@@ -30,5 +30,4 @@ public class JWTController {
         xmlResponse = xmlResponse.replace("&#xD;", "");
         return xmlResponse;
     }
-
 }

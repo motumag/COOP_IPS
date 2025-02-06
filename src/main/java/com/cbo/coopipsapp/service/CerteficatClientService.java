@@ -93,7 +93,7 @@ public class CerteficatClientService {
 //        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(headers);
 //
 //        ResponseEntity<CerteficateInformation> responseEntity = restTemplate.exchange(
-//                certeficateDownloadUrl + "?cert_iss=" + certificateInformation.getCertificateIssuer()
+//                certificateDownloadUrl + "?cert_iss=" + certificateInformation.getCertificateIssuer()
 //                        + "&&cert_sn=" + serialNumber,
 //                HttpMethod.GET, httpEntity, CerteficateInformation.class);
 //

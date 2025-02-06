@@ -47,7 +47,24 @@ public class DigestServiceImpl implements DigestService {
         }
         return signedXml;
     }
-   private String convertDocumentToString(Document doc) {
+
+    @Override
+    public String signIncomingDocument(String xmlString) {
+        String signedXml = null;
+        Document document = xmlFileUtility.createDocumentFromString(xmlString);
+        Document signedDocument=null;
+        SignatureInfo signatureInfo = xmlFileUtility.buildKeySignatureInfo();
+        SignatureKeyInfo signatureKeyInfo = xmlFileUtility.buildSignaturePrivateKeyInfo();
+        try {
+            signedDocument= signUtil.signIncoming(document, signatureInfo, signatureKeyInfo);
+            signedXml = convertDocumentToString(signedDocument);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return signedXml;
+    }
+
+    private String convertDocumentToString(Document doc) {
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();

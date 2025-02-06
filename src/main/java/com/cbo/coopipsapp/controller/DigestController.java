@@ -24,6 +24,12 @@ public class DigestController {
         xmlResponse = xmlResponse.replace("&#xD;", "");
         return xmlResponse;
     }
+    @PostMapping(value = "/digestIncoming", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
+    public String handleIncomingXmlRequest(@RequestBody String request) {
+        String xmlResponse = digestService.signIncomingDocument(request);
+        xmlResponse = xmlResponse.replace("&#xD;", "");
+        return xmlResponse;
+    }
     @PostMapping(value = "/verify", consumes = MediaType.APPLICATION_XML_VALUE)
     public String verifyXml(@RequestBody String request) {
         String xmlResponse = digestVerifier.verify(request);

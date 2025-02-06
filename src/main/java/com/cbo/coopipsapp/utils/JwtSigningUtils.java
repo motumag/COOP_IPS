@@ -35,7 +35,6 @@ public class JwtSigningUtils {
             this.signeJWT = this.generateJWT("cbo");
         } catch (Exception e) {
             log.error(e.getMessage());
-
         }
     }
 
@@ -47,17 +46,21 @@ public class JwtSigningUtils {
     }
 
     public String generateJWT(String userName) throws NoSuchAlgorithmException, Exception {
+        String jwtId = userName + "-" + System.currentTimeMillis() + "-" + (int)(Math.random() * 10000);
         PrivateKey privateKey = keyUtils.loadPrivateKey();
         Algorithm algorithm = Algorithm.RSA256((RSAKey) privateKey);
         X509Certificate key = keyUtils.getStoredCerteficate();
+        System.out.println("The cert is: " + key.getSubjectDN());
         BigInteger serialNumber = key.getSerialNumber();
+        System.out.println("serialNumber:" + serialNumber);
         String issuer = key.getIssuerX500Principal().getName();
         String jwtToken = JWT.create()
                 .withIssuer(participantBic)
                 .withClaim("cert_iss", issuer)
                 .withClaim("cert_sn", String.valueOf(serialNumber))
                 .withExpiresAt(new Date(System.currentTimeMillis() + 5000L))
-                .withJWTId("11223312412321")
+//                .withJWTId("11223312412321")
+                .withJWTId(jwtId) // Custom identifier
                 .sign(algorithm);
         return jwtToken;
     }
